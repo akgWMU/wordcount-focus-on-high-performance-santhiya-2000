@@ -8,7 +8,7 @@
 using namespace std;
 namespace fs = std::filesystem;
 
-// Stopwords/conjunctions
+// conjunctions
 const vector<string> STOPWORDS = {
     "and","or","but","if","so","yet","for","nor","although",
     "because","since","unless","until","while","whereas","after",
@@ -16,7 +16,7 @@ const vector<string> STOPWORDS = {
     "on","at","to","from","by","with","as","of"
 };
 
-// Remove punctuation and convert to lowercase
+// Remove punctuations and change to lowercase
 string cleanWord(string word) {
     string cleaned;
     for(char c : word) {

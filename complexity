@@ -1,0 +1,4 @@
+Search (binary)	O(log n)
+Insert (sorted)	O(n)
+Access by index	O(1)
+Sorting by count (Introsort - QS + HS)	O(n log n)

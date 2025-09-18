@@ -63,14 +63,14 @@ void processFiles(const vector<fs::path> &files, map<string,int> &localCounts) {
 int main() {
     string folderName = "random_text_files";
 
-    // Collect all file paths
-    vector<fs::path> allFiles;
+    // Collecting all the file paths
+    vector<fs::path> allFiles; //dynamic array
     for(const auto &entry : fs::directory_iterator(folderName)) {
         if(entry.is_regular_file())
             allFiles.push_back(entry.path());
     }
 
-    int numThreads = thread::hardware_concurrency(); // Use max available cores
+    int numThreads = thread::hardware_concurrency(); // Using max available cores
     if(numThreads == 0) numThreads = 4; // fallback
     vector<thread> threads;
     vector<map<string,int>> localMaps(numThreads);

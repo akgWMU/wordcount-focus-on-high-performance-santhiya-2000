@@ -1,109 +1,203 @@
-[![Review Assignment Due Date](https://classroom.github.com/assets/deadline-readme-button-22041afd0340ce965d47ae6ef1cefeee28c7c493a6346c4f15d667ab976d596c.svg)](https://classroom.github.com/a/fs7s3pf8)
-[![Open in Codespaces](https://classroom.github.com/assets/launch-codespace-2972f46106e565e64193e422d61a12cf1da4916b45550586e14ef0a7c637dd04.svg)](https://classroom.github.com/open-in-codespaces?assignment_repo_id=20405212)
-# :wave: The Basics of GitHub 
+**Program 1 -  wordcount.cpp**
 
-## 🤓 Course overview and learning outcomes 
+# Word Frequency Counter with Histogram
 
-The goal of this course is to give you a brief introduction to GitHub. We’ll also provide you with materials for further learning and a few ideas to get you started on our platform. 🚀
+This is a **C++ program** that reads all text files in a given folder, counts the frequency of words, and generates a histogram of the top 50 most frequent words.
 
-## :octocat: Git and GitHub
+## Logic
+  => Reads multiple text files from a folder.
+  => Cleans words (removes punctuation and converts to lowercase).
+  => Ignores common **conjunctions** (like *and, the, in, on*).
+  => Counts the frequency of all other words.
+  => if a word is found again, its count is incremented.
+  => Sorts words by frequency in descending order.
+  => Prints word counts to the console.
+  => Generates a histogram (`histogram.txt`) showing the top 50 words.
 
-Git is a **distributed Version Control System (VCS)**, which means it is a useful tool for easily tracking changes to your code, collaborating, and sharing. With Git you can track the changes you make to your project so you always have a record of what you’ve worked on and can easily revert back to an older version if need be. It also makes working with others easier—groups of people can work together on the same project and merge their changes into one final source!
+**Techniques Used:**
+  => Word Cleaning:
+  Removes punctuation by checking isalnum(c) for each character.
+  Converts all characters to lowercase for uniform comparison.
+  => Stopword Removal:
+  Maintains a predefined list of stopwords (like and, or, the, of...).
+  Uses **binary_search** on the sorted stopword list for O(log k) lookup (where k is number of stopwords).
+  => Efficient Word Storage: Stores words in a vector<pair<string,int>>.
+  Words are kept in sorted order at all times.
+  => Binary Search for Insertion & Counting:
+  => Uses lower_bound to find the word in O(log n).
+  => If found, increment count.
+  => If not found, insert at the correct position, keeping vector sorted.
+  => Sorting for Histogram: After processing the file, a copy of the list is sorted in non-increasing order by frequency using std::sort.
+  => Extracts the Top 50 words.
+  => Output Writing
+  Prints the full alphabetical word count to console.
+  Writes the Top 50 results to a file (histogram_top50.txt) for external use (e.g., plotting graphs in Python).
 
-GitHub is a way to use the same power of Git all online with an easy-to-use interface. It’s used across the software world and beyond to collaborate and maintain the history of projects.
+**Time Complexity**
+  Word Cleaning & Filtering:O(L + log K) per word, where L = average word length.
+  Vector Operations:
+  Insertion (with shifting): O(N) worst-case.
+  Search (binary search): O(log N).
+  Sorting by Count (Introsort - QS + HS)(Top 50): O(N log N).
+  Access by index	O(1)
+  Where:
+  W = total words processed, N = unique words, K = stopwords (small constant), T = threads (if extended to parallelism)
 
-GitHub is home to some of the most advanced technologies in the world. Whether you're visualizing data or building a new game, there's a whole community and set of tools on GitHub that can get you to the next step. This course starts with the basics of GitHub, but we'll dig into the rest later.
+**Space Complexity**
+  Word List (vector of pairs): O(N).
+  Stopword list: O(K) (negligible, constant).
+  Temporary structures (sorting): O(N).
+  Overall Space: O(N), where N = number of unique words.
 
-## :octocat: Understanding the GitHub flow 
+## Executed Output (Console)
+  santhiya@wireless39-140 wordcount-focus-on-high-performance-santhiya-2000 % g++ -std=c++17 wordcount.cpp -o wordcount
+  santhiya@wireless39-140 wordcount-focus-on-high-performance-santhiya-2000 % ./wordcount                              
+  Word Counts:
+  solution : 62104
+  strategy : 61729
+  classification : 31543
+  revenue : 31491
+  database : 31490
+  management : 31480
+  assessment : 31480
+  system : 31463
+  ....so on.
+  Histogram saved to histogram.txt
+  santhiya@wireless39-140 wordcount-focus-on-high-performance-santhiya-2000 % time ./wordcount  
+  ** ./wordcount  7.25s user 0.08s system 95% cpu 7.681 total**
 
-The GitHub flow is a lightweight workflow that allows you to experiment and collaborate on your projects easily, without the risk of losing your previous work.
+## Requirements
+  => C++17 or higher.
 
-### Repositories
+## Compilation & Usage
+  ```bash
+  g++ -std=c++17 wordcount.cpp -o wordcount
+  ./wordcount
+  time ./wordcount
+  ```
+**Trade-offs**
+  Advantages of vector + binary search:
+  => Cache-friendly, better memory locality than map.
+  => Deterministic ordering without extra sort.
+  => Simpler implementation, fewer pointers and allocations.
+  Limitations:
+  => Insertions are costly (O(N) worst case due to shifting).
+  => Poor scalability when almost every word is unique (e.g., huge vocabulary).
+  Alternatives:
+  std::map (AVL/Red-Black Tree): Guaranteed O(log N) insertion/search. Higher memory usage due to tree nodes.
+  std::unordered_map (Hash Table): Expected O(1) insertion/search except collision cases. Requires extra sorting step → O(N log N). Higher memory overhead.
+  *For medium-sized datasets with many duplicate words, vector + binary search performs very well due to cache efficiency.
+  *For very large datasets with high vocabulary diversity, unordered_map is typically faster.
 
-A repository is where your project work happens--think of it as your project folder. It contains all of your project’s files and revision history.  You can work within a repository alone or invite others to collaborate with you on those files.
+**Program 2 - wc_buffer.cpp**
 
-### Cloning 
+# Word Frequency Counter with Buffer and Multithreading added.
 
-When a repository is created with GitHub, it’s stored remotely in the ☁️. You can clone a repository to create a local copy on your computer and then use Git to sync the two. This makes it easier to fix issues, add or remove files, and push larger commits. You can also use the editing tool of your choice as opposed to the GitHub UI. Cloning a repository also pulls down all the repository data that GitHub has at that point in time, including all versions of every file and folder for the project! This can be helpful if you experiment with your project and then realize you liked a previous version more. 
-To learn more about cloning, read ["Cloning a Repository"](https://docs.github.com/en/github/creating-cloning-and-archiving-repositories/cloning-a-repository). 
+This is a **C++ program** that reads all text files in a given folder using multiple threads, counts the frequency of words, and generates a histogram of the top 50 most frequent words.
+Unlike the single-threaded version, this program uses multithreading to improve performance on large datasets.
 
-### Committing and pushing
-**Committing** and **pushing** are how you can add the changes you made on your local machine to the remote repository in GitHub. That way your instructor and/or teammates can see your latest work when you’re ready to share it. You can make a commit when you have made changes to your project that you want to “checkpoint.” You can also add a helpful **commit message** to remind yourself or your teammates what work you did (e.g. “Added a README with information about our project”).
+## Logic
+  => Reads all text files from a given folder using std::filesystem.
+  => Cleans each word (removes punctuation, keeps only alphabets, converts to lowercase).
+  => Ignores common stopwords/conjunctions (like and, the, in, on).
+  => Uses multiple threads to process different batches of files concurrently.
+  => Each thread maintains its own local word-frequency map.
+  => After all threads finish, local maps are merged into a global frequency map.
+  => Words are sorted in descending order of frequency.
+  => Prints word counts to the console.
+  => Generates a histogram (histogram_buf.txt) showing the top 50 words.
 
-Once you have a commit or multiple commits that you’re ready to add to your repository, you can use the push command to add those changes to your remote repository. Committing and pushing may feel new at first, but we promise you’ll get used to it 🙂
+## Techniques Used
 
-## 💻 GitHub terms to know 
+=> Word Cleaning:
+Removes non-alphabetic characters by checking isalpha(c) for each character.
+Converts all characters to lowercase for uniform comparison.
+=> Stopword Removal:
+Maintains a predefined list of stopwords (like and, or, the, of...).
+Uses find() on a small vector of stopwords for O(k) lookup (k ≈ 30, negligible cost).
+=> Threaded File Processing:
+Splits the list of files into nearly equal chunks.
+Each thread processes its own chunk and maintains a local frequency map.
+This avoids race conditions and reduces locking overhead.
+=> Local Counting with Maps:
+Each thread uses a std::map<string,int> for counting words.
+Provides O(log n) insertion/search per word (n = unique words in thread’s subset).
+=> Merging Results:
+After all threads finish, local maps are merged into a global map.
+For each unique word, counts from all threads are accumulated.
+=> Sorting for Histogram:
+A copy of the global map is stored in vector<pair<string,int>>.
+Sorted in non-increasing order of frequency using std::sort (O(n log n)).
+Extracts the Top 50 words for histogram.
+=> Output Writing:
+Prints the complete frequency list to console (alphabetical order by default from map).
+Writes the Top 50 histogram with bars (*) to histogram_buf.txt for visualization.
 
-### Repositories 
-We mentioned repositories already, they are where your project work happens, but let’s talk a bit more about the details of them! As you work more on GitHub you will have many repositories which may feel confusing at first. Fortunately, your ["GitHub dashboard"](https://docs.github.com/en/github/setting-up-and-managing-your-github-user-account/about-your-personal-dashboard) helps to easily navigate to your repositories and see useful information about them. Make sure you’re logged in to see it!
+**Time Complexity**
+  Word Cleaning & Filtering: O(L + K) per word.
+  Map Operations:
+  Insertion: O(log N) (N = unique words).
+  Search/Update: O(log N).
+  Sorting by Count: O(N log N).
+  Threading Impact: Work is split across T threads.
+  Sequential: O(M · W log N)
+  Parallel: O((M · W log N) / T)
+  Where:
+  M = number of files, W = average words per file, N = unique words, T = number of threads
 
-Repositories also contain **README**s. You can add a README file to your repository to tell other people why your project is useful, what they can do with your project, and how they can use it. We are using this README to communicate how to learn Git and GitHub with you. 😄 
-To learn more about repositories read ["Creating, Cloning, and Archiving Repositories](https://docs.github.com/en/github/creating-cloning-and-archiving-repositories/about-repositories) and ["About README's"](https://docs.github.com/en/github/creating-cloning-and-archiving-repositories/about-readmes). 
+**Space Complexity**
+  Space Complexity
+  std::map: O(N) (unique words stored).
+  Thread-local maps: O(T · N) in the worst case (if all words appear in every thread’s subset).
+  Sorted vector copy: O(N).
+  Overall: O(N + T·N) ≈ O(T·N)
 
-### Branches
-You can use branches on GitHub to isolate work that you do not want merged into your final project just yet. Branches allow you to develop features, fix bugs, or safely experiment with new ideas in a contained area of your repository. Typically, you might create a new branch from the default branch of your repository—main. This makes a new working copy of your repository for you to experiment with. Once your new changes have been reviewed by a teammate, or you are satisfied with them, you can merge your changes into the default branch of your repository.
-To learn more about branching, read ["About Branches"](https://docs.github.com/en/github/collaborating-with-issues-and-pull-requests/about-branches).
+## Executed Output (Console)
+  santhiya@wireless39-140 wordcount-focus-on-high-performance-santhiya-2000 % g++ -std=c++17 wc_buffer.cpp -o wc_buffer
+  santhiya@wireless39-140 wordcount-focus-on-high-performance-santhiya-2000 % ./wc_buffer 
+  solution : 62104
+  strategy : 61729
+  classification : 31543
+  revenue : 31491
+  database : 31490
+  management : 31480
+  assessment : 31480
+  ....so on.
+  Histogram saved to histogram_buf.txt
+  santhiya@wireless39-140 wordcount-focus-on-high-performance-santhiya-2000 % time ./wc_buffer    
+  **./wc_buffer  15.08s user 0.15s system 696% cpu 2.186 total**
 
-### Forks
-A fork is another way to copy a repository, but is usually used when you want to contribute to someone else’s project. Forking a repository allows you to freely experiment with changes without affecting the original project and is very popular when contributing to open source software projects!
-To learn more about forking, read ["Fork a repo"](https://docs.github.com/en/github/getting-started-with-github/fork-a-repo)
+## Requirements
+  => C++17 or higher.
 
-### Pull requests
-When working with branches, you can use a pull request to tell others about the changes you want to make and ask for their feedback. Once a pull request is opened, you can discuss and review the potential changes with collaborators and add more changes if need be. You can add specific people as reviewers of your pull request which shows you want their feedback on your changes! Once a pull request is ready-to-go, it can be merged into your main branch.
-To learn more about pull requests, read ["About Pull Requests"](https://docs.github.com/en/github/collaborating-with-issues-and-pull-requests/about-pull-requests). 
-
-
-### Issues
-Issues are a way to track enhancements, tasks, or bugs for your work on GitHub. Issues are a great way to keep track of all the tasks you want to work on for your project and let others know what you plan to work on. You can also use issues to tell a favorite open source project about a bug you found or a feature you think would be great to add!
-
-For larger projects, you can keep track of many issues on a project board. GitHub Projects help you organize and prioritize your work and you can read more about them [in this "About Project boards document](https://docs.github.com/en/github/managing-your-work-on-github/about-project-boards). You likely won’t need a project board for your assignments, but once you move on to even bigger projects, they’re a great way to organize your team’s work!
-You can also link together pull requests and issues to show that a fix is in progress and to automatically close the issue when someone merges the pull request.
-To learn more about issues and linking them to your pull requests, read ["About Issues"](https://docs.github.com/en/github/managing-your-work-on-github/about-issues). 
-
-### Your user profile
-
-Your profile page tells people the story of your work through the repositories you're interested in, the contributions you've made, and the conversations you've had. You can also give the world a unique view into who you are with your profile README. You can use your profile to let future employers know all about you! 
-To learn more about your user profile and adding and updating your profile README, read ["Managing Your Profile README"](https://docs.github.com/en/github/setting-up-and-managing-your-github-profile/managing-your-profile-readme). 
-
-### Using markdown on GitHub 
-
-You might have noticed already, but you can add some fun styling to your issues, pull requests, and files. ["Markdown"](https://guides.github.com/features/mastering-markdown/) is an easy way to style your issues, pull requests, and files with some simple syntax. This can be helpful to organize your information and make it easier for others to read. You can also drop in gifs and images to help convey your point!
-To learn more about using GitHub’s flavor of markdown, read ["Basic Writing and Formatting Syntax"](https://docs.github.com/en/github/writing-on-github/basic-writing-and-formatting-syntax). 
-
-### Engaging with the GitHub community
-
-The GitHub community is vast. There are many types of people who use GitHub in their day to day—students like you, professional developers, hobbyists working on open source projects, and explorers who are just jumping into the world of software development on their own. There are many ways you can interact with the larger GitHub community, but here are three places where you can start. 
-
-#### Starring repositories 
-
-If you find a repository interesting or you want to keep track of it, star it! When you star a repository it’s also used as a signal to surface better recommendations on github.com/explore. If you’d like to get back to your starred repositories you can do so via your user profile. 
-To learn  more about starring repositories, read ["Saving Repositories with Stars"](https://docs.github.com/en/github/getting-started-with-github/saving-repositories-with-stars). 
-
-#### Following users 
-
-You can follow people on GitHub to receive notifications about their activity and discover projects in their communities. When you follow a user, their public GitHub activity will show up on your dashboard so you can see all the cool things they are working on. 
-To learn more about following users, read ["Following People"](https://docs.github.com/en/github/getting-started-with-github/following-people).
-
-#### Browsing GitHub Explore 
-
-GitHub Explore is a great place to do just that … explore :smile: You can find new projects, events, and developers to interact with.
-
-You can check out the GitHub Explore website [at github.com/explore](https://github.com/explore). The more you interact with GitHub the more tailored your Explore view will be. 
-
-## 📝 Optional next steps 
-
-* Open a pull request and let your teacher know that you’ve finished this course.  
-* Create a new markdown file in this repository. Let them know what you learned and what you are still confused about! Experiment with different styles!
-* Create your profile README. Let the world know a little bit more about you! What are you interested in learning? What are you working on? What's your favorite hobby? Learn more about creating your profile README in the document, ["Managing Your Profile README"](https://docs.github.com/en/github/setting-up-and-managing-your-github-profile/managing-your-profile-readme).
-* Go to your user dashboard and create a new repository. Experiment with the features within that repository to familiarize yourself with them. 
-* [Let us know what you liked or didn’t like about the content of this course](https://support.github.com/contact/education). What would you like to see more of? What would be interesting or helpful to your learning journey? 
-
-## 📚  Resources 
-* [A short video explaining what GitHub is](https://www.youtube.com/watch?v=w3jLJU7DT5E&feature=youtu.be) 
-* [Git and GitHub learning resources](https://docs.github.com/en/github/getting-started-with-github/git-and-github-learning-resources) 
-* [Understanding the GitHub flow](https://guides.github.com/introduction/flow/)
-* [How to use GitHub branches](https://www.youtube.com/watch?v=H5GJfcp3p4Q&feature=youtu.be)
-* [Interactive Git training materials](https://githubtraining.github.io/training-manual/#/01_getting_ready_for_class)
-* [GitHub's Learning Lab](https://lab.github.com/)
-* [Education community forum](https://education.github.community/)
-* [GitHub community forum](https://github.community/)
+## Compilation & Usage
+  ```bash
+  g++ -std=c++17 wc_buffer.cpp -o wc_buffer
+  ./wc_buffer
+  time ./wc_buffer
+  ```
+## Trade-offs
+  Advantages of Multithreading with Local Maps:
+  => Exploits multiple CPU cores, reducing runtime significantly on large datasets.
+  => Thread-local maps remove the need for heavy synchronization (mutex), avoiding contention.
+  => Parallel I/O and parsing can overlap, giving better throughput.
+  => Good scalability for workloads with many files.
+  Limitations:
+  => Extra memory usage: Each thread maintains its own local map → O(T·N) worst case.
+  => Thread management overhead: Context switching, thread creation, and joining cost time.
+  => Diminishing returns: For small datasets or when I/O is bottlenecked, threading may not speed up execution.
+  => Merge overhead: After threads finish, results must be merged into a global map (O(T·N log N)).
+  Alternatives:
+  => std::map (Balanced Tree: Red-Black/AVL)
+  Pros: Guaranteed O(log N) insertion/search.
+  Cons: Higher memory usage (pointers, tree nodes), less cache-friendly.
+  => std::unordered_map (Hash Table)
+  Pros: Expected O(1) insertion/search (amortized).
+  Cons: Requires extra sorting step for final output → O(N log N).
+  Cons: Higher memory overhead due to hash buckets.
+  => std::vector + Binary Search
+  Pros: Cache-friendly, better memory locality.
+  Pros: Deterministic ordering without extra sort.
+  Cons: Insertions are costly (O(N) worst case due to shifting).
+  Cons: Performs poorly if vocabulary size is huge (many unique words).
+  This gives a balanced trade-off analysis of data structures + multithreading approach, so readers can see why map was chosen here, and what alternatives exist.
