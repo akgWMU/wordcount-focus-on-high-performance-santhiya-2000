@@ -1,0 +1,7 @@
+Complexity:
+Word processing: O(W)
+Map insert/search: O(W log M)
+Stopword check: O(W)
+Merging maps: O(M log M)
+Sorting: O(M log M)
+With T threads: ≈ O((W log M) / T + M log M)
